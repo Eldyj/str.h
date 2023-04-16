@@ -126,6 +126,15 @@ str_copy(target, what)
 }
 
 STRDEF
+void
+str_copyf(target, what)
+	str_t *target, *what;
+{
+	str_copy(target, what);
+	str_free(what);
+}
+
+STRDEF
 str_t
 *str(cs)
 	const char *const cs;
@@ -169,6 +178,15 @@ str_add(s1, s2)
 }
 
 STRDEF
+void
+str_addf(s1, s2)
+	str_t *s1, *s2;
+{
+	str_add(s1, s2);
+	str_free(s2);
+}
+
+STRDEF
 str_t
 *str_join(s1, s2)
 	const str_t *const s1, *const s2;
@@ -177,6 +195,17 @@ str_t
 	str_copy(s,s1);
 	str_add(s,s2);
 	return s;
+}
+
+STRDEF
+str_t
+*str_joinf(s1, s2)
+	str_t *s1, *s2;
+{
+	str_t *r = str_join(s1, s2);
+	str_free(s1);
+	str_free(s2);
+	return r;
 }
 
 STRDEF
@@ -193,6 +222,15 @@ str_prep(s1, s2)
 }
 
 STRDEF
+void
+str_prepf(s1, s2)
+	str_t *s1, *s2;
+{
+	str_prep(s1, s2);
+	str_free(s2);
+}
+
+STRDEF
 str_t
 *str_lpad(s, l)
 	const str_t *const s;
@@ -203,15 +241,37 @@ str_t
 
 STRDEF
 str_t
+*str_lpadf(s, l)
+	str_t *s;
+	const unsigned long l;
+{
+	str_t *r = str_lpad(s,l);
+	str_free(s);
+	return r;
+}
+
+STRDEF
+str_t
 *str_rpad(s, l)
 	const str_t *const s;
 	const unsigned long l;
 {
-	unsigned long fl = s->length - l;
+	unsigned long fl = s->length-l;
 	char *t = cstr_alloc(fl);
-	copy(t, s->cstr, fl);
+	copy(t,s->cstr,fl);
 	str_t *r = str(t);
 	cstr_free(t);
+	return r;
+}
+
+STRDEF
+str_t
+*str_rpadf(s, l)
+	str_t *s;
+	const unsigned long l;
+{
+	str_t *r = str_rpad(s,l);
+	str_free(s);
 	return r;
 }
 
@@ -221,10 +281,18 @@ str_t
 	const str_t *const s;
 	const unsigned long p1, p2;
 {
-	str_t *s1 = str_rpad(s,s->length - p2);
-	str_t *s2 = str_lpad(s1, p1);
-	str_free(s1);
-	return s2;
+	return str_lpadf(str_rpad(s,s->length-p2),p1);;
+}
+
+STRDEF
+str_t
+*str_substrf(s, p1, p2)
+	str_t *s;
+	const unsigned long p1, p2;
+{
+	str_t *r = str_substr(s,p1,p2);
+	str_free(s);
+	return r;
 }
 
 #endif /* !_STR_C_ */
