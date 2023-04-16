@@ -3,7 +3,6 @@
 
 #	include "strconv.h"
 #	include "strdef.h"
-#	define cstr_alloc(len) cstr_alloc(len+2)
 
 /* STRING TO TYPES CONVERTION */
 
@@ -214,7 +213,7 @@ str_t
 	while (ull_copy /= 10)
 		++len;
 	
-	char *cs = cstr_alloc(len);
+	char *cs = cstr_alloc(len+1);
 	
 	while (ull) {
 		cs[len] = (ull % 10) + '0';
@@ -238,7 +237,7 @@ str_t
 	while (ul_copy /= 10)
 		++len;
 	
-	char *cs = cstr_alloc(len);
+	char *cs = cstr_alloc(len+1);
 	
 	while (ul) {
 		cs[len--] = (ul % 10) + '0';
@@ -261,7 +260,7 @@ str_t
 	while (ui_copy /= 10)
 		++len;
 	
-	char *cs = cstr_alloc(len);
+	char *cs = cstr_alloc(len+1);
 	
 	while (ui) {
 		cs[len--] = (ui % 10) + '0';
@@ -284,7 +283,7 @@ str_t
 	while (us_copy /= 10)
 		++len;
 	
-	char *cs = cstr_alloc(len);
+	char *cs = cstr_alloc(len+1);
 	
 	while (us) {
 		cs[len--] = (us % 10) + '0';
@@ -307,7 +306,7 @@ str_t
 	while (ll_copy /= 10)
 		++len;
 	
-	char *cs = cstr_alloc(len);
+	char *cs = cstr_alloc(len+1);
 
 	if (ll < 0) {
 		ll *= -1;
@@ -336,7 +335,7 @@ str_t
 	while (l_copy /= 10)
 		++len;
 	
-	char *cs = cstr_alloc(len);
+	char *cs = cstr_alloc(len+1);
 
 	if (l < 0) {
 		l *= -1;
@@ -365,7 +364,7 @@ str_t
 	while (i_copy /= 10)
 		++len;
 	
-	char *cs = cstr_alloc(len);
+	char *cs = cstr_alloc(len+1);
 
 	if (i < 0) {
 		i *= -1;
@@ -394,7 +393,7 @@ str_t
 	while (s_copy /= 10)
 		++len;
 	
-	char *cs = cstr_alloc(len);
+	char *cs = cstr_alloc(len+1);
 
 	if (s < 0) {
 		s *= -1;
@@ -423,5 +422,4 @@ str_t
 	return str("false");
 }
 
-#undef cstr_alloc
 #endif /* !_STRCONV_C_ */
