@@ -60,10 +60,8 @@ strmap_set(m, i, v)
 {
 	unsigned long index = strmap_get_index(m, i);
 
-	if (index != m->indexes->length+1) {
-		strvec_set(m->values, v, index);
-		return;
-	}
+	if (index != m->indexes->length+1)
+		return strvec_set(m->values, v, index);
 
 	strvec_push(m->indexes, i);
 	strvec_push(m->values, v);

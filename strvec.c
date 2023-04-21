@@ -28,6 +28,36 @@ strvec_pushf(v, s)
 }
 
 STRDEF
+void
+strvec_prepend(v, s)
+	strvec_t *v;
+	const str_t *const s;
+{
+	if (v == NULL || s == NULL)
+		return;
+  
+	unsigned long i = v->length++;
+	v->ptr = realloc(v->ptr, v->length * sizeof(str_t*));
+  
+	while (i > 0) {
+		strvec_set(v, strvec_get(v, i - 1), i);
+		i--;
+	}
+  
+	strvec_set(v, s, 0);
+}
+
+STRDEF
+void
+strvec_prependf(v, s)
+	strvec_t *v;
+	str_t *s;
+{
+	strvec_prepend(v, s);
+	str_free(s);
+}
+
+STRDEF
 str_t
 *strvec_pop(v)
 	strvec_t *v;
@@ -120,6 +150,38 @@ strvec_t
 	strvec_t *v = strvec(init);
 	str_free(init);
 	return v;
+}
+
+STRDEF
+void
+strvec_reverse(v)
+	strvec_t* v;
+{
+	if (v == NULL || !v->length)
+		return;
+  
+	unsigned long i = 0;
+	unsigned long j = v->length - 1;
+	str_t* s;
+  
+	while (i < j) {
+		s = strvec_get(v, i);
+		strvec_set(v, strvec_get(v, j), i++);
+		strvec_set(v, s, j--);
+	}
+}
+
+STRDEF
+strvec_t
+*strvec_dup(v)
+	const strvec_t *const v;
+{
+	strvec_t *r = strvecf(strvec_first(v));
+	
+	for (unsigned long i = 1; i < v->length; ++i)
+		strvec_push(r, strvec_get(v, i));
+
+	return r;
 }
 
 STRDEF

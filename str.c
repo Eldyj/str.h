@@ -136,6 +136,16 @@ str_copyf(target, what)
 
 STRDEF
 str_t
+*str_dup(target)
+	const str_t *const target;
+{
+	str_t *result = str("");
+	str_copy(result, target);
+	return result;
+}
+
+STRDEF
+str_t
 *str(cs)
 	const char *const cs;
 {
@@ -155,18 +165,88 @@ str_free(s)
 }
 
 STRDEF
+char
+str_get(s, i)
+	const str_t *const s;
+	const unsigned long i;
+{
+	return ((char[2]){0, s->cstr[i]})[i < s->length];
+}
+
+STRDEF
+void
+str_chadd(s, ch)
+	str_t *s;
+	const char ch;
+{
+	if (ch == 0)
+		return;
+
+	s->length += 1;
+	s->cstr = realloc(s->cstr, s->length+1);
+	s->cstr[s->length - 1] = ch;
+	s->cstr[s->length] = 0;
+}
+
+/*STRDEF
 void
 str_cadd(s, cs)
 	str_t *s;
 	const char *const cs;
 {
 	unsigned long l = cstr_length(cs);
-	char *p = cstr_alloc(s->length+l-2);
-	copy(p,s->cstr,s->length);
-	copy(p+s->length,cs,l);
-	str_set(s,p);
-	cstr_free(p);
+	s->length += l;
+	s->cstr = realloc(s->cstr, sizeof(char)*(s->length+1));
+
+	for (unsigned long i = s->length-l-1; i < s->length; ++i) {
+		s->cstr[i] = cs[i - (s->length-l-1)];
+	}
+	// copy(s->cstr + s->length-l-1, cs, l);
+	//char *p = cstr_alloc(s->length+l-2);
+	//copy(p,s->cstr,s->length);
+	//copy(p+s->length,cs,l);
+	//str_set(s,p);
+	//cstr_free(p);
+}*/
+/*
+STRDEF
+void
+str_cadd(s, cstr)
+	str_t *s;
+	const char *const cstr;
+{
+	if (s == NULL || cstr == NULL)
+		return;
+
+	unsigned long len1 = s->length;
+	unsigned long len2 = cstr_length(cstr);
+
+	char *new_cstr = realloc(s->cstr, len1 + len2 + 1);
+
+	if (new_cstr == NULL)
+		return;
+
+	s->cstr = new_cstr;
+
+	copy(s->cstr + len1, cstr, len2);
+	s->length = len1 + len2;
+	s->cstr[s->length] = '\0';
+}*/
+
+STRDEF
+void
+str_cadd(s, cstr)
+	str_t *s;
+	const char *const cstr;
+{
+	unsigned long l = cstr_length(cstr);
+	for (unsigned long i = 0;i < l; ++i) {
+		if (cstr[i] == 0)
+			return;
+		str_chadd(s, cstr[i]);
+	}
 }
+
 
 STRDEF
 void
@@ -214,8 +294,7 @@ str_prep(s1, s2)
 	str_t *s1;
 	const str_t *const s2;
 {
-	str_t *s = str("");
-	str_copy(s,s1);
+	str_t *s = str_dup(s1);
 	str_add(s,s2);
 	str_copy(s1,s);
 	str_free(s);
@@ -256,12 +335,19 @@ str_t
 	const str_t *const s;
 	const unsigned long l;
 {
-	unsigned long fl = s->length-l;
+	/*unsigned long fl = s->length-l;
 	char *t = cstr_alloc(fl);
 	copy(t,s->cstr,fl);
 	str_t *r = str(t);
 	cstr_free(t);
-	return r;
+	return r;*/
+	str_t *tmp = str_dup(s);
+	unsigned fl = tmp->length-l;
+	tmp->cstr[fl] = 0;
+	str_t *result = str(tmp->cstr);
+	result->length = fl+1;
+	str_free(tmp);
+	return result;
 }
 
 STRDEF
